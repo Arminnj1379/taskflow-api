@@ -12,6 +12,7 @@ import { UserService } from '../user/user.service'; // فرض بر این است
 
 @WebSocketGateway({
   cors: {
+    path: '/notification', // ← اینجا مسیر را تعیین می‌کنیم
     origin: '*', // در محیط production محدود کنید
   },
 })
