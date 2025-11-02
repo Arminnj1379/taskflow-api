@@ -10,7 +10,7 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
-import { hashPassword, comparePassword } from './utils';
+import { comparePassword } from './utils';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 
 @ApiTags('Auth')
@@ -21,43 +21,13 @@ export class AuthController {
     private userService: UserService,
   ) {}
 
-  @Post('register')
-  @ApiOperation({ summary: 'ثبت‌نام کاربر جدید' })
-  @ApiBody({
-    type: AuthCredentialsDto,
-    examples: {
-      default: {
-        value: { email: 'user@example.com', password: '123456' },
-      },
-    },
-  })
-  @ApiResponse({ status: 201, description: 'کاربر با موفقیت ثبت‌نام شد.' })
-  @ApiResponse({ status: 400, description: 'اطلاعات نامعتبر یا کاربر تکراری.' })
-  @UsePipes(new ValidationPipe({ whitelist: true }))
-  async register(@Body() credentials: AuthCredentialsDto) {
-    const { email, password } = credentials;
-
-    if (!email || !password) {
-      throw new BadRequestException('Email and password are required');
-    }
-
-    const existingUser = await this.userService.findByEmail(email);
-    if (existingUser) {
-      throw new BadRequestException('User already exists');
-    }
-
-    const hashedPassword = await hashPassword(password);
-    await this.userService.create(email, hashedPassword);
-    return { message: 'User registered successfully' };
-  }
-
   @Post('login')
   @ApiOperation({ summary: 'ورود کاربر و دریافت توکن JWT' })
   @ApiBody({
     type: AuthCredentialsDto,
     examples: {
       default: {
-        value: { email: 'user@example.com', password: '123456' },
+        value: { username: 'user', password: '123456' },
       },
     },
   })
@@ -77,13 +47,13 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'اعتبارنامه نامعتبر.' })
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async login(@Body() credentials: AuthCredentialsDto) {
-    const { email, password } = credentials;
+    const { username, password } = credentials;
 
-    if (!email || !password) {
+    if (!username || !password) {
       throw new BadRequestException('Email and password are required');
     }
 
-    const user = await this.userService.findByEmail(email);
+    const user = await this.userService.findByUsername(username);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }

@@ -1,9 +1,9 @@
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { IsNotEmpty, MinLength } from 'class-validator';
 
 export class AuthCredentialsDto {
-  @IsEmail()
   @IsNotEmpty()
-  email: string;
+  @MinLength(4, { message: 'حداقل طول نام کاربری 6 کاراکتر می باشد' })
+  username: string;
 
   @IsNotEmpty()
   @MinLength(6)
