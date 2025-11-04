@@ -29,7 +29,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? (exception.getResponse() as
             | string
             | { message: string | string[]; error?: string })
-        : 'Internal server error';
+        : 'Internal server error from exception filter';
 
     const message =
       typeof errorResponse === 'string'
