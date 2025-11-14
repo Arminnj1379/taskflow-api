@@ -11,6 +11,7 @@ import {
   Req,
   UsePipes,
   ValidationPipe,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -46,7 +47,7 @@ export class TaskController {
         value: { title: 'testtask', description: 'This is a Test :))' },
       },
     },
-  }) // ⬅️ این خط برای Swagger ضروریه
+  })
   @ApiResponse({ status: 201, description: 'تسک با موفقیت ایجاد شد.' })
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async create(
@@ -96,5 +97,12 @@ export class TaskController {
     const user = req.user;
     await this.taskService.deleteTask(id, user);
     return { message: 'Task deleted successfully' };
+  }
+
+  @Get('test-error')
+  @ApiOperation({ summary: 'دریافت تمام تسک‌های کاربر' })
+  @ApiResponse({ status: 200, description: 'لیست تسک‌ها.' })
+  testError() {
+    throw new BadRequestException('This is a test error');
   }
 }
